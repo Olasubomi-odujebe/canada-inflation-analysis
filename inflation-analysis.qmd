@@ -6,6 +6,7 @@ format:
     toc: true
     number-sections: true
     theme: cosmo
+output-file: index.html
 ---
 
 ## Introduction
@@ -170,7 +171,7 @@ Canada's average inflation rate was **2.65%** between 2016 and 2026, slightly ab
 library(ggplot2)
 library(scales)
 
-ggplot(all_items, aes(x = Date, y = CPI)) +
+p1 <- ggplot(all_items, aes(x = Date, y = CPI)) +
   geom_line(color = "#0B3C5D", linewidth = 1) +
   labs(
     title = "Figure 1. Canada's Consumer Price Index (2015–2026)",
@@ -189,6 +190,13 @@ ggplot(all_items, aes(x = Date, y = CPI)) +
 theme(
   plot.margin = margin(15, 15, 15, 15)
 )
+ggsave(
+  filename = "images/cpi-trend.png",
+  plot = p1,
+  width = 10,
+  height = 6,
+  dpi = 300
+)
 ```
 
 **Interpretation**
@@ -198,7 +206,7 @@ theme(
 ```{r echo=FALSE}
 #| warning: false
 #| message: false
-ggplot(all_items, aes(Date, Inflation)) +
+p2 <- ggplot(all_items, aes(Date, Inflation)) +
   geom_line(aes(color="Inflation Rate"), linewidth=1) +
   geom_hline(
     aes(yintercept=2,color="Bank of Canada Target (2%)"),
@@ -229,6 +237,13 @@ ggplot(all_items, aes(Date, Inflation)) +
     axis.title=element_text(face="bold"),
     legend.position="right"
   )
+ggsave(
+  filename = "images/inflation-rate.png",
+  plot = p2,
+  width = 10,
+  height = 6,
+  dpi = 300
+)
 ```
 
 **Interpretation**
