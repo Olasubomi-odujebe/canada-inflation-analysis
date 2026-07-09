@@ -33,6 +33,16 @@ The project was developed using **R** and **Quarto** as part of my macroeconomic
 
 ---
 
+## Visualizations
+
+### Consumer Price Index (2015–2026)
+
+![Consumer Price Index](images/cpi-trend.png)
+
+### Year-over-Year Inflation Rate (2016–2026)
+
+![Inflation Rate](images/inflation-rate.png)
+
 ## Tools Used
 
 - R
