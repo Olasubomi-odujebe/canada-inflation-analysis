@@ -76,7 +76,11 @@ canada-inflation-analysis/
 │   └── data.csv
 └── README.md
 ```
+## 📄 View the Full Report
 
+The full interactive HTML report is available here:
+
+[Canada's Inflation Analysis Report](inflation-analysis.html)
 ---
 
 ## Future Work
