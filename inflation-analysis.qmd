@@ -1,0 +1,259 @@
+---
+title: "Canada's Inflation Rate (2015–2026): Has Price Stability Returned?"
+author: "Olasubomi P. Odujebe"
+format:
+  html:
+    toc: true
+    number-sections: true
+    theme: cosmo
+---
+
+## Introduction
+
+Inflation is one of the most important macroeconomic indicators because it measures changes in the general price level of goods and services over time. In Canada, inflation is measured using the Consumer Price Index (CPI), published monthly by Statistics Canada. The Bank of Canada aims to maintain inflation at approximately **2%** to promote price stability and sustainable economic growth.\
+\
+This report analyzes Canada's monthly Consumer Price Index from **January 2015 to May 2026** to examine inflation trends and evaluate whether price stability has returned.
+
+## Objective
+
+\- Examine the long-term trend in Canada's Consumer Price Index.\
+- Calculate the year-over-year inflation rate.\
+- Compare inflation with the Bank of Canada's 2% target.\
+- Discuss the implications of inflation for the Canadian economy.
+
+## Data Source
+
+> - Statistics Canada Consumer Price Index (CPI)
+>
+> - Monthly Data
+>
+> - Geography: Canada
+>
+> - Period: January 2015 – May 2026
+
+```{r echo=FALSE}
+#| warning: false
+#| message: false
+library(tinytex)
+library(tidyverse)
+library(lubridate)
+library(scales)
+library(gt)
+library(readr)
+
+
+cpi <- read_csv("data/data.csv")
+
+```
+
+```{r echo=FALSE}
+#| warning: false
+#| message: false
+cpi_long <- cpi %>%
+  pivot_longer(
+    cols = -Geography,
+    names_to = "Date",
+    values_to = "CPI"
+  ) %>%
+  mutate(
+    Date = ymd(Date)
+  )
+```
+
+```{r echo=FALSE}
+#| warning: false
+#| message: false
+#| results: "hide"
+glimpse(cpi_long)
+```
+
+```{r echo=FALSE}
+#| warning: false
+#| message: false
+all_items <- cpi_long %>%
+  filter(Geography == "All-items") %>%
+  arrange(Date)
+```
+
+```{r echo=FALSE}
+#| warning: false
+#| message: false
+all_items <- all_items %>%
+  mutate(
+    Inflation = (CPI / lag(CPI, 12) - 1) * 100
+  )
+```
+
+## CPI Descriptive Statistics
+
+```{r echo=FALSE}
+library(dplyr)
+#| warning: false
+#| message: false
+stats <- all_items %>%
+  summarise(
+    Observations = n(),
+    Mean = round(mean(CPI), 2),
+    Median = round(median(CPI), 2),
+    SD = round(sd(CPI), 2),
+    Minimum = round(min(CPI), 2),
+    Maximum = round(max(CPI), 2)
+  )
+library(knitr)
+
+kable(
+  stats,
+  caption = "Table 1. Descriptive Statistics for Canada's All-items Consumer Price Index"
+)
+
+```
+
+**Interpretation**
+
+**Table 1** presents the descriptive statistics for Canada's All-items Consumer Price Index (CPI) from January 2015 to May 2026. The dataset contains **137 monthly observations**, reflecting changes in the overall price level over more than eleven years. The average CPI during the sample period was **143.33**, while the median value was **137.40**, suggesting that the CPI increased over time, particularly in the latter part of the sample. The CPI ranged from **124.30** to **169.60**, with a standard deviation of **13.68**, indicating a steady upward trend in prices rather than large month-to-month fluctuation
+
+## Year-over-Year Inflation
+
+The year-over-year inflation rate was calculated using the percentage change in the Consumer Price Index relative to the same month in the previous year:
+
+$$\text{Inflation Rate}_t =
+\left(
+\frac{CPI_t - CPI_{t-12}}
+{CPI_{t-12}}
+\right)\times100$$
+
+where
+
+- $$(CPI_t)$$ is the Consumer Price Index in month *t*.
+- $$(CPI\_{t-12})$$ is the Consumer Price Index in the same month of the previous year.
+
+```{r echo=FALSE}
+#| warning: false
+#| message: false
+all_items <- all_items %>%
+  arrange(Date) %>%
+  mutate(
+    Inflation = ((CPI / lag(CPI, 12)) - 1) * 100
+  )
+```
+
+```{r echo=FALSE}
+#| warning: false
+#| message: false
+inflation_stats <- all_items %>%
+  summarise(
+    Observations = sum(!is.na(Inflation)),
+    Mean = round(mean(Inflation, na.rm = TRUE), 2),
+    Median = round(median(Inflation, na.rm = TRUE), 2),
+    `Standard Deviation` = round(sd(Inflation, na.rm = TRUE), 2),
+    Minimum = round(min(Inflation, na.rm = TRUE), 2),
+    Maximum = round(max(Inflation, na.rm = TRUE), 2)
+  )
+library()
+inflation_stats %>%
+  gt() %>%
+  tab_header(
+    title = "Table 2",
+    subtitle = "Descriptive Statistics for Canada's Year-over-Year Inflation Rate"
+  )
+```
+
+**Interpretation**
+
+Canada's average inflation rate was **2.65%** between 2016 and 2026, slightly above the Bank of Canada's 2% target. Inflation varied from **-0.37%** to **8.13%**, with a standard deviation of **1.74**, indicating moderate fluctuations over the sample period.
+
+## Consumer Price Index (CPI) Trend
+
+```{r echo=FALSE}
+#| warning: false
+#| message: false
+library(ggplot2)
+library(scales)
+
+ggplot(all_items, aes(x = Date, y = CPI)) +
+  geom_line(color = "#0B3C5D", linewidth = 1) +
+  labs(
+    title = "Figure 1. Canada's Consumer Price Index (2015–2026)",
+    x = "Year",
+    y = "Consumer Price Index (CPI)",
+  ) +
+ scale_x_date(
+  date_breaks = "1 year",
+  date_labels = "%Y"
+) +
+  theme(
+  plot.title = element_text(size = 13, face = "bold", hjust = 0.5),
+  axis.title = element_text(face = "bold"),
+  plot.caption = element_text(size = 9)
+) +
+theme(
+  plot.margin = margin(15, 15, 15, 15)
+)
+```
+
+**Interpretation**
+
+**Figure 1.** This illustrates the trend in Canada's Consumer Price Index (CPI) from 2015 to 2026. The CPI increased steadily throughout the period, indicating a sustained rise in the overall price level. The sharpest increase occurred between 2021 and 2022, reflecting heightened inflationary pressures following the COVID-19 pandemic.
+
+```{r echo=FALSE}
+#| warning: false
+#| message: false
+ggplot(all_items, aes(Date, Inflation)) +
+  geom_line(aes(color="Inflation Rate"), linewidth=1) +
+  geom_hline(
+    aes(yintercept=2,color="Bank of Canada Target (2%)"),
+    linewidth=0.8,
+    linetype="dashed"
+  ) +
+  scale_color_manual(
+    values=c(
+      "Inflation Rate"="#B22222",
+      "Bank of Canada Target (2%)"="steelblue"
+    ),
+    name=""
+  ) +
+  labs(
+    title="Figure 2. Canada's Year-over-Year Inflation Rate",
+    subtitle="2016–2026",
+    x="Year",
+    y="Inflation Rate (%)",
+  ) +
+  scale_x_date(
+    date_breaks="1 year",
+    date_labels="%Y"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title=element_text(face="bold",hjust=0.5),
+    plot.subtitle=element_text(hjust=0.5),
+    axis.title=element_text(face="bold"),
+    legend.position="right"
+  )
+```
+
+**Interpretation**
+
+**Figure 2.** Canada's Year-over-Year Inflation Rate Relative to the Bank of Canada's Inflation Target (2016–2026)
+
+It illustrates Canada's year-over-year inflation rate from 2016 to 2026 relative to the Bank of Canada's 2% inflation target. Inflation remained relatively stable and close to the target between 2016 and 2019 before falling below zero during the COVID-19 pandemic in 2020. It then increased sharply, peaking at **8.13%** in 2022, before gradually declining. Although inflation has moderated considerably, the latest observations remain above the Bank of Canada's 2% target, suggesting that price stability has improved but has not yet been fully restored.
+
+## Discussion
+
+The analysis shows that Canada's inflation remained relatively stable between **2015 and 2019**, with the inflation rate generally staying close to the Bank of Canada's **2%** target. During **2020**, inflation briefly turned negative as the COVID-19 pandemic slowed economic activity and reduced consumer demand. As the economy recovered, inflation increased sharply, reaching a peak of **8.13%** in 2022. This surge was driven by a combination of supply chain disruptions, rising energy prices, labour shortages, and strong consumer demand.
+
+Although inflation has declined significantly since its 2022 peak, the latest data indicate that it remains slightly above the Bank of Canada's **2%** target. **Overall, the findings suggest that Canada has made substantial progress in restoring price stability; however, inflation has not yet fully returned to the Bank of Canada's 2% target.** Continued monitoring of inflation will be important for assessing future monetary policy decisions and the overall health
+
+## Technical Details
+
+- Programming Language: R
+- Environment: Quarto
+- Packages: tidyverse, ggplot2, dplyr, tidyr, lubridate, gt
+- Data Source: Statistics Canada
+- Frequency: Monthly
+- Period: January 2015 – May 2026
+
+## References
+
+Bank of Canada. (n.d.). *Inflation-control target*. <https://www.bankofcanada.ca/rates/indicators/key-variables/inflation-control-target/>
+
+Statistics Canada. (2026). *Consumer Price Index, monthly, not seasonally adjusted (Table 18-10-0004-01).* <https://www150.statcan.gc.ca/>
