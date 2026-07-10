@@ -80,7 +80,7 @@ canada-inflation-analysis/
 
 The full interactive HTML report is available here:
 
-[Canada's Inflation Analysis Report](inflation-analysis.html)
+[View the Live HTML Report](https://olasubomi-odujebe.github.io/canada-inflation-analysis/)
 ---
 
 ## Future Work
